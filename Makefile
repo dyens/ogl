@@ -5,7 +5,7 @@ RM=rm -f
 CPPFLAGS=-O3 -pedantic -Wall
 
 LDFLAGS=-Iinclude
-LDLIBS=-lglfw 
+LDLIBS=-lglfw
 
 SRCS=main.cpp
 OBJS=main.o
