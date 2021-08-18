@@ -2,7 +2,7 @@ CC=gcc
 CXX=g++
 RM=rm -f
 
-CPPFLAGS=-O3 -pedantic -Wall -std=c++2b
+CPPFLAGS=-O3 -pedantic -Wall -Wextra -std=c++2b -g
 
 LDFLAGS=-Iinclude -Iglm -lglfw -ldl
 
