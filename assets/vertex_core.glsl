@@ -4,8 +4,10 @@ layout (location = 0) in vec3 aPos;
 
 out vec4 color;
 
+uniform mat4 transform; // set in code
+
 void main() {
-  gl_Position = vec4(aPos, 1.0f);
+  gl_Position = transform * vec4(aPos, 1.0f);
   if (aPos.x < 0.0) {
     color = vec4(1.0f, 0.0f, 0.0f, 0.5f);
   }

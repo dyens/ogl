@@ -1,6 +1,4 @@
-#include<string>
 #include "shader.h"
-#include "utils.h"
 
 // contructor
 Shader::Shader(const char* vertexShaderPath, const char* fragShaderPath) {

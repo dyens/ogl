@@ -10,6 +10,10 @@
 #include"src/shader.h"
 #include"src/utils.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 
 #define WIDTH 800
 #define HEIGHT 600
@@ -87,6 +91,13 @@ int main () {
   // Set EBO
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
+
+
+  glm::mat4 trans = glm::mat4(1.0f);
+  trans = glm::rotate(trans, glm::radians(0.45f), glm::vec3(0.0f, 0.0f, 1.0f));
+  shader.activate();
+  shader.setMat4("transform", trans);
+
   
   while(!glfwWindowShouldClose(window)){
     processInput(window);
@@ -95,6 +106,9 @@ int main () {
 
     glBindVertexArray(VAO);
     shader.activate();
+    trans = glm::rotate(trans, (float)glfwGetTime() / 100.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+    shader.setMat4("transform", trans);
+
     // glUseProgram(shaderProgram);
     // glDrawArrays(GL_TRIANGLES, 0, 3);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
