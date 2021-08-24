@@ -2,13 +2,12 @@
 
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
-#include<stb_image.h>
-
 #include<fstream>
 #include<sstream>
 #include<string>
 #include"src/shader.h"
 #include"src/utils.h"
+#include"src/texture.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -34,7 +33,6 @@ void processInput(GLFWwindow *window)
 
 
 int main () {
-  std::cout << "hello world" << std::endl;
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -60,15 +58,16 @@ int main () {
 
   // Verticies
   float verticies[] = {
-    0.5f, 0.5f, 0.0f, // top right
-    -0.5f, 0.5f, 0.0f, // top left
-    -0.5f, -0.5f, 0.0f, // bottom left
-    0.5f, -0.5f, 0.0f, // bottom right
+    // shader          texture
+    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
+    -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // top left
+    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // bottom right
+    0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // top right
   };
 
   unsigned int indicies[] = {
     0, 1, 2, // first triangle
-    2, 3, 0, // second triangle
+    3, 1, 2, // second triangle
   };
   
 
@@ -85,8 +84,28 @@ int main () {
   glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
 
   // Set vertex pointer
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
+
+  // Set texture pointer
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
+
+  // Textures
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  Texture texture = Texture("assets/cat.jpg", "texture1", GL_TEXTURE0);
+
+  shader.activate();
+  shader.setInt(texture.textureName, 0);
+   
+
+
+
 
   // Set EBO
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -94,7 +113,8 @@ int main () {
 
 
   glm::mat4 trans = glm::mat4(1.0f);
-  trans = glm::rotate(trans, glm::radians(0.45f), glm::vec3(0.0f, 0.0f, 1.0f));
+  // trans = glm::rotate(trans, glm::radians(0.45f), glm::vec3(0.0f, 0.0f, 1.0f));
+  trans = glm::rotate(trans, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
   shader.activate();
   shader.setMat4("transform", trans);
 
@@ -104,9 +124,13 @@ int main () {
     glClearColor(0.2f, 0.3f, 0.3f, 0.8f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+
     glBindVertexArray(VAO);
     shader.activate();
-    trans = glm::rotate(trans, (float)glfwGetTime() / 100.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+    // trans = glm::rotate(trans, (float)glfwGetTime() / 100.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+    trans = glm::rotate(trans, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     shader.setMat4("transform", trans);
 
     // glUseProgram(shaderProgram);
