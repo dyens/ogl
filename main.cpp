@@ -13,7 +13,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-
 #define WIDTH 800
 #define HEIGHT 600
 
@@ -60,8 +59,8 @@ int main () {
   float verticies[] = {
     // shader          texture
     -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-    -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // top left
-    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // bottom right
+    0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, // top left
+    -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, // bottom right
     0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // top right
   };
 
@@ -92,19 +91,17 @@ int main () {
   glEnableVertexAttribArray(1);
 
 
-  // Textures
+  // Setup textures
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
   Texture texture = Texture("assets/cat.jpg", "texture1", GL_TEXTURE0);
 
   shader.activate();
+  // TODO: 0 -> GL_TEXTURE0
   shader.setInt(texture.textureName, 0);
    
-
-
 
 
   // Set EBO
@@ -124,9 +121,7 @@ int main () {
     glClearColor(0.2f, 0.3f, 0.3f, 0.8f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-
+    texture.activate();
     glBindVertexArray(VAO);
     shader.activate();
     // trans = glm::rotate(trans, (float)glfwGetTime() / 100.0f, glm::vec3(0.0f, 0.0f, 1.0f));
