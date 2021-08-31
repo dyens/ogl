@@ -5,13 +5,16 @@
 #include<fstream>
 #include<sstream>
 #include<string>
-#include"src/shader.h"
-#include"src/utils.h"
-#include"src/texture.h"
+#include"shader.h"
+#include"utils.h"
+#include"texture.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include<stb_image.h>
+#define STB_IMAGE_IMPLEMENTATION
 
 #define WIDTH 800
 #define HEIGHT 600
@@ -37,6 +40,9 @@ int main () {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 
+
+  // REMOVE VSYNC !!!
+  glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
   GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Dyens test", NULL, NULL);
   if (window == NULL) {
@@ -116,7 +122,18 @@ int main () {
   shader.setMat4("transform", trans);
 
   
+  double lastTime = glfwGetTime();
+  int nbFrames = 0;
   while(!glfwWindowShouldClose(window)){
+    // Show FPS
+    nbFrames++;
+    double currentTime = glfwGetTime();
+    if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+      // printf and reset timer
+      std::cout << "FPS:" << nbFrames << std::endl;
+      nbFrames = 0;
+      lastTime += 1.0;
+    }
     processInput(window);
     glClearColor(0.2f, 0.3f, 0.3f, 0.8f);
     glClear(GL_COLOR_BUFFER_BIT);

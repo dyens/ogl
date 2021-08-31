@@ -1,8 +1,9 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include<stb_image.h>
 #define STB_IMAGE_IMPLEMENTATION
- #include<stb_image.h>
+
 #include <glad/glad.h>
 #include "utils.h"
 #include<GLFW/glfw3.h>

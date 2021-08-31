@@ -6,26 +6,22 @@ CPPFLAGS=-O3 -pedantic -Wall -Wextra -std=c++2b -ggdb
 
 LDFLAGS=-Iinclude -Iglm -lglfw -ldl
 
-SRCS=main.cpp
-OBJS=main.o shader.o utils.o
+BUILD_DIR=build
+SRC_DIR=src
+OBJECTS = $(BUILD_DIR)/main.o \
+	$(BUILD_DIR)/shader.o \
+	$(BUILD_DIR)/texture.o \
+	$(BUILD_DIR)/utils.o
 
-all: main
 
-main: main.o shader.o utils.o texture.o
-	$(CXX) $(CPPFLAGS) $(LDFLAGS) -o main main.o glad.c shader.o utils.o texture.o
+all: $(BUILD_DIR)/main
 
-main.o: main.cpp
-	$(CXX) $(CPPFLAGS) $(LDFLAGS) -c main.cpp
+$(BUILD_DIR)/main: $(OBJECTS)
+	$(CXX) $(CPPFLAGS) $(LDFLAGS) $(OBJECTS) $(SRC_DIR)/glad.c -o $(BUILD_DIR)/main
 
-shader.o: src/shader.cpp
-	$(CXX) $(CPPFLAGS) $(LDFLAGS) -c src/shader.cpp
-
-texture.o: src/texture.cpp
-	$(CXX) $(CPPFLAGS) $(LDFLAGS) -c src/texture.cpp
-
-utils.o: src/utils.cpp
-	$(CXX) $(CPPFLAGS) $(LDFLAGS) -c src/utils.cpp
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(CPPFLAGS) $(LDFLAGS) -o $@ -c $< 
 
 clean:
-	$(RM) $(OBJS)
+	$(RM) $(BUILD_DIR)/*
 
