@@ -16,8 +16,10 @@
 #include<stb_image.h>
 #define STB_IMAGE_IMPLEMENTATION
 
-#define WIDTH 800
-#define HEIGHT 600
+#define WIDTH 1024
+#define HEIGHT 768
+#define VSYNC false
+#define SWAPTEXTURE false
 
 
 
@@ -42,7 +44,7 @@ int main () {
 
 
   // REMOVE VSYNC !!!
-  glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+  glfwWindowHint(GLFW_DOUBLEBUFFER, VSYNC);
 
   GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Dyens test", NULL, NULL);
   if (window == NULL) {
@@ -102,7 +104,24 @@ int main () {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  Texture texture = Texture("assets/cat.jpg", "texture1", GL_TEXTURE0);
+
+  int catWidth, catHeight, catNChannels;
+  stbi_set_flip_vertically_on_load(true);
+  unsigned char *catData = stbi_load("assets/cat.jpg", &catWidth, &catHeight, &catNChannels, 0);
+  if (!catData) {
+    terminate("Failed to load texture");
+  }
+
+  int dogWidth, dogHeight, dogNChannels;
+  stbi_set_flip_vertically_on_load(true);
+  unsigned char *dogData = stbi_load("assets/dog.jpg", &dogWidth, &dogHeight, &dogNChannels, 0);
+  if (!dogData) {
+    terminate("Failed to load texture");
+  }
+ 
+ 
+  // Texture texture = Texture("texture1", "assets/dog.jpg");
+  Texture texture = Texture("texture1", catWidth, catHeight, catData);
 
   shader.activate();
   // TODO: 0 -> GL_TEXTURE0
@@ -124,6 +143,7 @@ int main () {
   
   double lastTime = glfwGetTime();
   int nbFrames = 0;
+  bool isDogShowed = false;
   while(!glfwWindowShouldClose(window)){
     // Show FPS
     nbFrames++;
@@ -138,7 +158,16 @@ int main () {
     glClearColor(0.2f, 0.3f, 0.3f, 0.8f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    texture.activate();
+    if (SWAPTEXTURE){
+      if (isDogShowed) {
+        texture.subImage(catWidth, catHeight, catData);
+        isDogShowed = false;
+      } else {
+        texture.subImage(dogWidth, dogHeight, dogData);
+        isDogShowed = true;
+      }
+    }
+    texture.activate(GL_TEXTURE0);
     glBindVertexArray(VAO);
     shader.activate();
     // trans = glm::rotate(trans, (float)glfwGetTime() / 100.0f, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -151,12 +180,15 @@ int main () {
 
     glfwSwapBuffers(window);
     glfwPollEvents();
-
+    // glfwSetWindowShouldClose(window, GLFW_TRUE);
   }
 
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VAO);
   glDeleteBuffers(1, &EBO);
+
+  stbi_image_free(catData);
+  stbi_image_free(dogData);
   glfwTerminate();
   return 0;
 }

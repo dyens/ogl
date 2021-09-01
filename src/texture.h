@@ -9,17 +9,37 @@
 #include<GLFW/glfw3.h>
 
 
+// In modern OpenGL there are 4 different methods to update 2D textures:
+//
+// - glTexImage2D - the slowest one, recreates internal data structures.
+// - glTexSubImage2D - a bit faster, but can't change the parameters (size, pixel format) of the image.
+// - Render-to-texture with FBO - update texture entirely on GPU, very fast. Refer to this answer for more details: https://stackoverflow.com/a/10702468/1065190
+// - Pixel Buffer Object PBO - for fast uploads from CPU to GPU, not supported (yet) on OpenGL ES.
+
+
+
 
 class Texture {
 public:
-  const char* imagePath;
   unsigned int textureId;
   const char *textureName;
-  GLenum glTextureId;
   
-  // contructor
-  Texture(const char* imagePath, const char* textureName, GLenum glTextureId);
-  void activate();
+  Texture(const char* textureName, const char* imagePath);
+  Texture(const char* textureName, int width, int height, unsigned char *data);
+
+  void activate(GLenum glTextureId);
+  void deactivate();
+
+  void subImage(
+    	GLsizei width,
+    	GLsizei height,
+    	void * pixels);
+
+
+private:
+  void initGL();
+  void loadImage(const char *imagePath);
+  void loadPixels(unsigned char *data, int width, int height);
 };
 
 #endif
