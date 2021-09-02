@@ -10,14 +10,5 @@ uniform mat4 transform; // set in code
 
 void main() {
   gl_Position = transform * vec4(aPos, 1.0f);
-  if (aPos.x < 0.0) {
-    color = vec4(1.0f, 0.0f, 0.0f, 0.5f);
-  }
-  else if (aPos.x == 0.0) {
-    color = vec4(0.0f, 1.0f, 0.0f, 0.5f);
-  }
-  else {
-    color = vec4(0.0f, 0.0f, 1.0f, 0.5f);
-  }
   textCoord = aTexCoord;
 }

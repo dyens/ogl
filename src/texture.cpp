@@ -1,16 +1,15 @@
 #include "texture.h"
 
-Texture::Texture(const char* textureName, const char* imagePath):
-  textureName(textureName)
-{
+Texture::Texture(const char *textureName, const char *imagePath,
+                 GLenum imageFormat)
+    : textureName(textureName), imageFormat(imageFormat) {
   initGL();
   loadImage(imagePath);
 }
 
-
-Texture::Texture(const char* textureName, int width, int height, unsigned char *data):
-  textureName(textureName)
-{
+Texture::Texture(const char *textureName, int width, int height,
+                 unsigned char *data, GLenum imageFormat)
+    : textureName(textureName), imageFormat(imageFormat) {
   initGL();
   if (data) {
     loadPixels(data, width, height);
@@ -25,28 +24,13 @@ void Texture::activate(GLenum glTextureId) {
   glBindTexture(GL_TEXTURE_2D, textureId);
 }
 
-void Texture::deactivate() {
-  glBindTexture(GL_TEXTURE_2D, 0);
-}
+void Texture::deactivate() { glBindTexture(GL_TEXTURE_2D, 0); }
 
-void Texture::subImage(
-    	GLsizei width,
-    	GLsizei height,
-    	void * pixels){
-
-  glTexSubImage2D(
-		  GL_TEXTURE_2D,
-                  0,
-                  0,
-                  0,
-                  width,
-                  height,
-                  GL_RGB,
-                  GL_UNSIGNED_BYTE,
-                  pixels);
+void Texture::subImage(GLsizei width, GLsizei height, void *pixels) {
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, imageFormat,
+                  GL_UNSIGNED_BYTE, pixels);
   glGenerateMipmap(GL_TEXTURE_2D);
 }
-
 
 void Texture::initGL() {
   glGenTextures(1, &textureId);
@@ -68,6 +52,7 @@ void Texture::loadImage(const char *imagePath) {
 }
 
 void Texture::loadPixels(unsigned char *data, int width, int height) {
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+  glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, width, height, 0, imageFormat,
+               GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
 }

@@ -1,6 +1,9 @@
-#include <GLFW/glfw3.h>
+// clang-format off
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <stb_image.h>
+#define STB_IMAGE_IMPLEMENTATION
+// clang-format on
 
 #include <fstream>
 #include <glm/glm.hpp>
@@ -13,12 +16,14 @@
 #include "shader.h"
 #include "texture.h"
 #include "utils.h"
-#define STB_IMAGE_IMPLEMENTATION
+#include <chrono>
+#include <thread>
+
 
 #define WIDTH 1024
 #define HEIGHT 768
-#define VSYNC false
-#define SWAPTEXTURE false
+#define VSYNC true
+#define SWAPTEXTURE true
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
   (void)window;
@@ -92,6 +97,11 @@ int main() {
                         (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
+  // Set EBO
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies,
+               GL_STATIC_DRAW);
+
   // Setup textures
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -114,17 +124,31 @@ int main() {
     terminate("Failed to load texture");
   }
 
+  int rectsWidth, rectsHeight, rectsNChannels;
+  stbi_set_flip_vertically_on_load(true);
+  unsigned char *rectsData =
+      stbi_load("assets/rects.png", &rectsWidth, &rectsHeight, &rectsNChannels, STBI_rgb_alpha);
+  if (!rectsData) {
+    terminate("Failed to load texture");
+  }
+
+  int circlsWidth, circlsHeight, circlsNChannels;
+  stbi_set_flip_vertically_on_load(true);
+  unsigned char *circlsData =
+      stbi_load("assets/circls.png", &circlsWidth, &circlsHeight, &circlsNChannels, STBI_rgb_alpha);
+  if (!circlsData) {
+    terminate("Failed to load texture");
+  }
+
   // Texture texture = Texture("texture1", "assets/dog.jpg");
-  Texture texture = Texture("texture1", catWidth, catHeight, catData);
+  Texture texture = Texture("texture1", dogWidth, dogHeight, dogData, GL_RGB);
+  Texture mask_texture = Texture("mask", circlsWidth, circlsHeight, circlsData, GL_RGBA);
 
   shader.activate();
   // TODO: 0 -> GL_TEXTURE0
   shader.setInt(texture.textureName, 0);
-
-  // Set EBO
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies,
-               GL_STATIC_DRAW);
+  // TODO: 1 -> GL_TEXTURE1
+  shader.setInt(mask_texture.textureName, 1);
 
   glm::mat4 trans = glm::mat4(1.0f);
   // trans = glm::rotate(trans, glm::radians(0.45f), glm::vec3(0.0f,
@@ -153,14 +177,23 @@ int main() {
 
     if (SWAPTEXTURE) {
       if (isDogShowed) {
+	texture.activate(GL_TEXTURE0);
         texture.subImage(catWidth, catHeight, catData);
+
+	mask_texture.activate(GL_TEXTURE1);
+        mask_texture.subImage(rectsWidth, rectsHeight, rectsData);
         isDogShowed = false;
       } else {
+	texture.activate(GL_TEXTURE0);
         texture.subImage(dogWidth, dogHeight, dogData);
+
+	mask_texture.activate(GL_TEXTURE1);
+        mask_texture.subImage(circlsWidth, circlsHeight, circlsData);
         isDogShowed = true;
       }
     }
     texture.activate(GL_TEXTURE0);
+    mask_texture.activate(GL_TEXTURE1);
     glBindVertexArray(VAO);
     shader.activate();
     // trans = glm::rotate(trans, (float)glfwGetTime() / 100.0f, glm::vec3(0.0f,
@@ -170,11 +203,18 @@ int main() {
 
     // glUseProgram(shaderProgram);
     // glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    // For composing textures with transp
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDisable(GL_BLEND);
+
 
     glfwSwapBuffers(window);
     glfwPollEvents();
     // glfwSetWindowShouldClose(window, GLFW_TRUE);
+    // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 
   glDeleteVertexArrays(1, &VAO);
@@ -183,6 +223,10 @@ int main() {
 
   stbi_image_free(catData);
   stbi_image_free(dogData);
+
+  stbi_image_free(rectsData);
+  stbi_image_free(circlsData);
+
   glfwTerminate();
   return 0;
 }
