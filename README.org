@@ -1,0 +1,56 @@
+* Сравнение движков
+  - Unity
+  - UE4
+  - Godot
+  - Unigine
+  - OpenGL (минус - user input)
+  - ImGUI
+ 
+** BLANK
+*** TODO Удобство
+*** TODO Зрелость продукта
+*** TODO Рендеринг видео, наложение текстур
+*** TODO Создание 3D
+*** TODO Порог входа
+*** TODO Лицензия цена
+*** TODO UI
+*** TODO Community, Help
+
+
+** UE4
+*** TODO Удобство
+**** Нужна хорошая машина
+     Mой ноут с дискретной nvidia еле справляется.
+     Компиляция проекта занимает (3d игра с стрельбой по кубикам) 44 минуты
+     258 мб собранный проект
+**** TODO Наверное для создания сложных 3d игр удобен
+*** Зрелость продукта
+    Популярный, зрелый продукт
+*** Рендеринг видео, наложение текстур
+    [[https://docs.unrealengine.com/4.26/en-US/WorkingWithMedia/MediaFramework/HowTo/ImgMediaSource/][Image seq]]
+    [[https://docs.unrealengine.com/4.26/en-US/WorkingWithMedia/MediaFramework/HowTo/FileMediaSource/][Video file]]
+*** TODO Создание 3D
+*** Порог входа
+    Огромная система. Но много tutorial + docs
+*** Лицензия цена
+    [[https://www.unrealengine.com/eula/publishing][Unreal Engine End User License Agreement for Publishing]]:
+    This license is free to use and incurs 5% royalties when you monetize your game or other interactive off-the-shelf product and your lifetime gross revenues from that product exceed $1,000,000 USD. 
+
+    [[https://www.unrealengine.com/eula/creators][Unreal Engine End User License Agreement for Creators]]:
+    This license is free to use and 100% royalty-free; you can use it to create internal or free projects, or to develop linear content or custom projects for clients, but not for publishing off-the-shelf offerings.
+*** TODO UI
+*** Community, Help
+    Огромное комьюнити.
+
+** GODOT
+*** TODO Удобство
+    
+    
+*** TODO Зрелость продукта
+*** TODO Рендеринг видео, наложение текстур
+*** TODO Создание 3D
+*** TODO Порог входа
+*** TODO Лицензия цена
+*** TODO UI
+*** TODO Community, Help
+
